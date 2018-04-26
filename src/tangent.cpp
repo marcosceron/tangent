@@ -55,16 +55,12 @@ int main(int argc, char** argv)
 
     //Faz Leitura dos Parametros para o GOAL
     if(argc == 1){
-
-	goalx=13.0;
-	goaly=8.0;
-	/*	
+	
         printf("Definido Padrao Aleatorio\n");
         srand(time(NULL));
         goalx=double(rand()%200)/10.0;
         srand(time(NULL));
         goaly=double(rand()%150)/10.0;
-	*/
 
     }else{
         if(argc == 3){
@@ -77,6 +73,7 @@ int main(int argc, char** argv)
         }
     }
 
+    double orientation;
     //Loop Principal
     while(ros::ok()) 
     {
@@ -84,21 +81,51 @@ int main(int argc, char** argv)
 
         // Calcula velocidade
 
-        //  Seu codigo .....
-	v1=3.0;
-	v2=0;
+	double difX = goalx - current_pose.pose.pose.position.x;
+	double difY = goaly - current_pose.pose.pose.position.y;	
+	double goalOrientation = atan2(difY, difX);	
 	
 	
-	//printf("Range max %lf", current_laser.range_max);
-	//printf("Range min %lf", current_laser.range_min);
-	//printf("Intensities %lf", current_laser.intensities);
+	/**	
+	 Orientação - tipo Quarternion
+	 yaw = ângulo de orientação do robô
+	**/
+	orientation = tf::getYaw(current_pose.pose.pose.orientation);	
+	// Ãngulo de radiano para grau	
+	orientation = orientation*180/M_PI;	
+	goalOrientation = goalOrientation*180/M_PI;	
+	
+	//ROS_INFO("Goal %lg", goalOrientation);
+	//ROS_INFO("Robo %lg", orientation);
+
+   
+	
+	
+	double diferencaAngulos = goalOrientation - orientation;
+	
+	//ROS_INFO("Dif %lg", diferencaAngulos);
+
+	if (diferencaAngulos > -10 && diferencaAngulos < 10){		
+		v2=0;
+
+		
+		
+		double rangeCentral = current_laser.ranges[current_laser.ranges.size()/2];
+		
+		
+	}
+	
 	
 	double xRobo = current_pose.pose.pose.position.x;
 	double yRobo = current_pose.pose.pose.position.y;
 
+	/**
 	printf("Ãngulo máximo: %lf \n", current_laser.angle_max);
 	printf("Ãngulo mínimo: %lf \n", current_laser.angle_min);
 	printf("Ãngulo incremento: %lf \n", current_laser.angle_increment);
+	**/
+
+	//printf("Range mínimo: %lf", current_laser.range_max);
 
 	//printf("Posição atual: %lf, %lf", current_pose.pose.pose.position.x, current_pose.pose.pose.position.y);
 	/**	
@@ -126,3 +153,4 @@ int main(int argc, char** argv)
     }
     return 0;
 }
+
