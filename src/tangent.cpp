@@ -78,11 +78,10 @@ int main(int argc, char** argv)
     while(ros::ok()) 
     {
 	
-
-        // Calcula velocidade
-
+	// Diferença X e Y do objetivo para o robô
 	double difX = goalx - current_pose.pose.pose.position.x;
-	double difY = goaly - current_pose.pose.pose.position.y;	
+	double difY = goaly - current_pose.pose.pose.position.y;
+	// Ângulo de orientação do objetivo	
 	double goalOrientation = atan2(difY, difX);	
 	
 	
@@ -98,19 +97,28 @@ int main(int argc, char** argv)
 	//ROS_INFO("Goal %lg", goalOrientation);
 	//ROS_INFO("Robo %lg", orientation);
 
-   
-	
-	
 	double diferencaAngulos = goalOrientation - orientation;
 	
 	//ROS_INFO("Dif %lg", diferencaAngulos);
 
 	if (diferencaAngulos > -10 && diferencaAngulos < 10){		
 		v2=0;
+		
+		// pegar a medição 0, central e a última
+		
+		for (double i=0; i<current_laser.ranges.size(); i+=current_laser.ranges.size()/2) {
+			double range = current_laser.ranges[i];
+			double xObstaculo = range * cos(current_laser.angle_min + current_laser.angle_increment * i);
+			double yObstaculo = range * sin(current_laser.angle_min + current_laser.angle_increment * i);
 
+			// Diferenças coordenadas robô - obstáculo		
+			double difObstaculoX = current_pose.pose.pose.position.x - xObstaculo;
+			double difObstaculoY = current_pose.pose.pose.position.y - yObstaculo;
 		
+			printf ("Distancia x: %lg, y: %lg\n", difObstaculoX, difObstaculoY);
+				
+		}
 		
-		double rangeCentral = current_laser.ranges[current_laser.ranges.size()/2];
 		
 		
 	}
