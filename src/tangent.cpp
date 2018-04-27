@@ -100,57 +100,33 @@ int main(int argc, char** argv)
 	double diferencaAngulos = goalOrientation - orientation;
 	
 	//ROS_INFO("Dif %lg", diferencaAngulos);
+	double xObstaculo;
+	double yObstaculo;
 
 	if (diferencaAngulos > -10 && diferencaAngulos < 10){		
 		v2=0;
-		
 		// pegar a medição 0, central e a última
-		
 		for (double i=0; i<current_laser.ranges.size(); i+=current_laser.ranges.size()/2) {
 			double range = current_laser.ranges[i];
-			double xObstaculo = range * cos(current_laser.angle_min + current_laser.angle_increment * i);
-			double yObstaculo = range * sin(current_laser.angle_min + current_laser.angle_increment * i);
+			xObstaculo = range * cos(current_laser.angle_min + current_laser.angle_increment * i);
+			yObstaculo = range * sin(current_laser.angle_min + current_laser.angle_increment * i);
 
-			// Diferenças coordenadas robô - obstáculo		
-			double difObstaculoX = current_pose.pose.pose.position.x - xObstaculo;
-			double difObstaculoY = current_pose.pose.pose.position.y - yObstaculo;
 		
-			printf ("Distancia x: %lg, y: %lg\n", difObstaculoX, difObstaculoY);
+			if (xObstaculo <=5 || yObstaculo <=5) {
+				//printf("Entrei aqui");
+				v1=0;
+				v2=1.0;
+				ROS_INFO("%lg", current_laser.angle_min*180/M_PI);
+							
+			}
+
 				
 		}
 		
-		
-		
-	}
-	
-	
-	double xRobo = current_pose.pose.pose.position.x;
-	double yRobo = current_pose.pose.pose.position.y;
-
-	/**
-	printf("Ãngulo máximo: %lf \n", current_laser.angle_max);
-	printf("Ãngulo mínimo: %lf \n", current_laser.angle_min);
-	printf("Ãngulo incremento: %lf \n", current_laser.angle_increment);
-	**/
-
-	//printf("Range mínimo: %lf", current_laser.range_max);
-
-	//printf("Posição atual: %lf, %lf", current_pose.pose.pose.position.x, current_pose.pose.pose.position.y);
-	/**	
-	if (xRobo>=13.0) {
-		printf("Entrei aqui \n");
-		v1=0;
-		v2=2;
-		//printf("Orientação x %lf \n", current_pose.pose.pose.orientation.x);
-		//printf("Orientação y %lf \n", current_pose.pose.pose.orientation.y);
-		//printf("Orientação z %lf \n", current_pose.pose.pose.orientation.z);
-		//printf("Orientação w %lf \n", current_pose.pose.pose.orientation.w);
 
 		
 	}
-	**/
-
-
+	
 
         // Envia Sinal de Velocidade
         speed_create.linear.x=v1;
