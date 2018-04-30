@@ -77,7 +77,6 @@ int main(int argc, char** argv)
     //Loop Principal
     while(ros::ok()) 
     {
-	
 	// Diferença X e Y do objetivo para o robô
 	double difX = goalx - current_pose.pose.pose.position.x;
 	double difY = goaly - current_pose.pose.pose.position.y;
@@ -102,32 +101,34 @@ int main(int argc, char** argv)
 	//ROS_INFO("Dif %lg", diferencaAngulos);
 	double xObstaculo;
 	double yObstaculo;
-
+	
+	int i = current_laser.ranges.size()/2;
+	double range = current_laser.ranges[i];
+	/**	
+	xObstaculo = range * cos(current_laser.angle_min + current_laser.angle_increment * i);
+	yObstaculo = range * sin(current_laser.angle_min + current_laser.angle_increment * i);	
+	**/
+	
+	ROS_INFO("i: %d", i);	
 	if (diferencaAngulos > -10 && diferencaAngulos < 10){		
 		v2=0;
-		// pegar a medição 0, central e a última
-		for (double i=0; i<current_laser.ranges.size(); i+=current_laser.ranges.size()/2) {
-			double range = current_laser.ranges[i];
-			xObstaculo = range * cos(current_laser.angle_min + current_laser.angle_increment * i);
-			yObstaculo = range * sin(current_laser.angle_min + current_laser.angle_increment * i);
-
 		
-			if (xObstaculo <=5 || yObstaculo <=5) {
-				//printf("Entrei aqui");
-				v1=0;
-				v2=1.0;
-				ROS_INFO("%lg", current_laser.angle_min*180/M_PI);
-							
-			}
-
-				
-		}
 		
-
 		
 	}
 	
-
+	/**
+	if (xObstaculo <=5 || yObstaculo <=5) {
+			printf("Entrei aqui");
+			v1=0;
+			v2=1.0;
+						
+	}
+	**/
+	
+	
+	//ROS_INFO("%lg", current_laser.ranges[i]);
+	
         // Envia Sinal de Velocidade
         speed_create.linear.x=v1;
         speed_create.angular.z=v2;
