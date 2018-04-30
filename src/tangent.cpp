@@ -13,12 +13,13 @@
 //Variaveis Globais Para Leitura de Dados
 nav_msgs::Odometry current_pose;
 sensor_msgs::LaserScan current_laser;
+bool laser_pronto = false;
 
 //Funcao Callback do Laser
 void lasercallback(const sensor_msgs::LaserScan::ConstPtr& laser)
 {
 	current_laser = *laser;
-
+	laser_pronto = true;
 	return;
 }
 
@@ -55,13 +56,11 @@ int main(int argc, char** argv)
 
     //Faz Leitura dos Parametros para o GOAL
     if(argc == 1){
-	
         printf("Definido Padrao Aleatorio\n");
         srand(time(NULL));
         goalx=double(rand()%200)/10.0;
         srand(time(NULL));
         goaly=double(rand()%150)/10.0;
-
     }else{
         if(argc == 3){
             goalx=atof(argv[1]);
@@ -72,9 +71,13 @@ int main(int argc, char** argv)
             return -1;
         }
     }
+    double orientation;    
 
-    double orientation;
-    //Loop Principal
+    while(ros::ok() && !laser_pronto) 
+    {
+	ros::spinOnce();
+        loop_rate.sleep();
+    }
     while(ros::ok()) 
     {
 	// Diferença X e Y do objetivo para o robô
@@ -102,20 +105,50 @@ int main(int argc, char** argv)
 	double xObstaculo;
 	double yObstaculo;
 	
-	int i = current_laser.ranges.size()/2;
-	double range = current_laser.ranges[i];
 	/**	
 	xObstaculo = range * cos(current_laser.angle_min + current_laser.angle_increment * i);
 	yObstaculo = range * sin(current_laser.angle_min + current_laser.angle_increment * i);	
 	**/
+	//ROS_INFO("%lg", current_laser.ranges[current_laser.ranges.size()/2]);
+	//ROS_INFO_STREAM(current_laser.ranges.size());	
 	
-	ROS_INFO("i: %d", i);	
-	if (diferencaAngulos > -10 && diferencaAngulos < 10){		
-		v2=0;
+	//ROS_INFO_STREAM(diferencaAngulos);
+
+	double laserCentral = current_laser.ranges[540];
+	double laserEsquerda = current_laser.ranges[405];
+	double laserDireita = current_laser.ranges[675];
+
 		
+	
+	if (diferencaAngulos > 100 && diferencaAngulos < 200) {
+		//ROS_INFO("If do 100");
+		v2=1.0;	
+	}
+	else if (laserCentral<1) {	
+		//ROS_INFO("If do laser central");
+		ROS_INFO_STREAM(diferencaAngulos);
+		v1=0;
+		if (diferencaAngulos < 0 && diferencaAngulos > -270) {
+			v2=-1.0;
+		}
 		
 		
 	}
+	else if (laserEsquerda<1) {
+		v1=0;
+		v2=-1.0;	
+	}
+	else {
+		v1=1.0;
+		v2=0;
+	}
+
+	if (diferencaAngulos > -10 && diferencaAngulos < 10){		
+		v2=0;
+		
+	}
+
+
 	
 	/**
 	if (xObstaculo <=5 || yObstaculo <=5) {
@@ -135,7 +168,6 @@ int main(int argc, char** argv)
         vel_pub.publish(speed_create);
         ros::spinOnce();
         loop_rate.sleep();
-    }
+}
     return 0;
 }
-
