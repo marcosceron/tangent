@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 	 yaw = ângulo de orientação do robô
 	**/
 	orientation = tf::getYaw(current_pose.pose.pose.orientation);	
-	// Ãngulo de radiano para grau	
+	// Ângulo de radiano para grau	
 	orientation = orientation*180/M_PI;	
 	goalOrientation = goalOrientation*180/M_PI;	
 	
