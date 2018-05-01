@@ -117,8 +117,8 @@ int main(int argc, char** argv)
 	double laserDireita = current_laser.ranges[405];
 	double laserEsquerda = current_laser.ranges[675];
 
-	ROS_INFO("Central: %lg\nEsquerda: %lg\nDireita: %lg\n", laserCentral, laserEsquerda, laserDireita);	
-	ROS_INFO("Dif: %lg",diferencaAngulos);	
+	//ROS_INFO("Central: %lg\nEsquerda: %lg\nDireita: %lg\n", laserCentral, laserEsquerda, laserDireita);	
+	//ROS_INFO("Dif: %lg",diferencaAngulos);	
 
 		
 
@@ -133,7 +133,7 @@ int main(int argc, char** argv)
 			v2=2.0;
 		}
 		else if(diferencaAngulos>35 && diferencaAngulos<75) {
-			ROS_INFO("ang45");
+			//ROS_INFO("ang45");
 			v1=0;
 			v2=-2.0;		
 		}
@@ -151,36 +151,36 @@ int main(int argc, char** argv)
 	}
 	
 	
-	if (laserEsquerda<1 && laserDireita<2) {
+	if (laserEsquerda<1 && laserDireita<2 && laserCentral<8) {
 		//ROS_INFO("IF2");
 		v1=0;
 		v2=1.0;	
 	}
 	if(laserCentral<1 && laserDireita<1 && diferencaAngulos<-200) {
-		ROS_INFO("Aqui");
+		//ROS_INFO("Aqui");
+		v1=0;
+		v2=1.0;	
+	}
+	if(laserDireita<0.5) {
 		v1=0;
 		v2=1.0;	
 	}
 
-	if(laserDireita<1 && laserCentral<1 && laserEsquerda>5 && diferencaAngulos<-200){
+	
+	if((current_pose.pose.pose.position.y>=12 && current_pose.pose.pose.position.y<=14)
+	&& (current_pose.pose.pose.position.x>=6 && current_pose.pose.pose.position.x<=8)) {
+		//ROS_INFO("Objetivo");
 		v1=0;
-		v2=1.0;	
+		v2=0;	
 	}
-
+	
+	
+	if(diferencaAngulos>-10 && diferencaAngulos<10) {
+		v2=0;	
+	}
 	
 	
 	//ROS_INFO("X: %lg\n, Y:%lg", current_pose.pose.pose.position.x, current_pose.pose.pose.position.y);
-	/**
-	if (xObstaculo <=5 || yObstaculo <=5) {
-			printf("Entrei aqui");
-			v1=0;
-			v2=1.0;
-						
-	}
-	**/
-	
-	
-	//ROS_INFO("%lg", current_laser.ranges[i]);
 	
         // Envia Sinal de Velocidade
         speed_create.linear.x=v1;
