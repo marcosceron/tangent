@@ -86,7 +86,6 @@ int main(int argc, char** argv)
 	// Ângulo de orientação do objetivo	
 	double goalOrientation = atan2(difY, difX);	
 	
-	
 	/**	
 	 Orientação - tipo Quarternion
 	 yaw = ângulo de orientação do robô
@@ -115,41 +114,62 @@ int main(int argc, char** argv)
 	//ROS_INFO_STREAM(diferencaAngulos);
 
 	double laserCentral = current_laser.ranges[540];
-	double laserEsquerda = current_laser.ranges[405];
-	double laserDireita = current_laser.ranges[675];
+	double laserDireita = current_laser.ranges[405];
+	double laserEsquerda = current_laser.ranges[675];
+
+	ROS_INFO("Central: %lg\nEsquerda: %lg\nDireita: %lg\n", laserCentral, laserEsquerda, laserDireita);	
+	ROS_INFO("Dif: %lg",diferencaAngulos);	
 
 		
+
+	v2=0;
+	v1=2.0;
+
 	
-	if (diferencaAngulos > 100 && diferencaAngulos < 200) {
-		//ROS_INFO("If do 100");
-		v2=1.0;	
-	}
-	else if (laserCentral<1) {	
-		//ROS_INFO("If do laser central");
-		ROS_INFO_STREAM(diferencaAngulos);
-		v1=0;
-		if (diferencaAngulos < 0 && diferencaAngulos > -270) {
-			v2=-1.0;
+	if(laserCentral<2 && laserDireita>laserCentral) {
+		if(diferencaAngulos > 100) {
+			
+			v1=0;
+			v2=2.0;
+		}
+		else if(diferencaAngulos>35 && diferencaAngulos<75) {
+			ROS_INFO("ang45");
+			v1=0;
+			v2=-2.0;		
 		}
 		
-		
+		// dif=63 lá em cima
+		//break;
+	
 	}
-	else if (laserEsquerda<1) {
+	
+	if(laserDireita<2 && laserCentral<2 && diferencaAngulos>0) {
+		//ROS_INFO("IF1");
+
 		v1=0;
-		v2=-1.0;	
+		v2=2.0;	
 	}
-	else {
-		v1=1.0;
-		v2=0;
+	
+	
+	if (laserEsquerda<1 && laserDireita<2) {
+		//ROS_INFO("IF2");
+		v1=0;
+		v2=1.0;	
+	}
+	if(laserCentral<1 && laserDireita<1 && diferencaAngulos<-200) {
+		ROS_INFO("Aqui");
+		v1=0;
+		v2=1.0;	
 	}
 
-	if (diferencaAngulos > -10 && diferencaAngulos < 10){		
-		v2=0;
-		
+	if(laserDireita<1 && laserCentral<1 && laserEsquerda>5 && diferencaAngulos<-200){
+		v1=0;
+		v2=1.0;	
 	}
-
 
 	
+	
+	//ROS_INFO("X: %lg\n, Y:%lg", current_pose.pose.pose.position.x, current_pose.pose.pose.position.y);
 	/**
 	if (xObstaculo <=5 || yObstaculo <=5) {
 			printf("Entrei aqui");
