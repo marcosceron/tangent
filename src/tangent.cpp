@@ -175,8 +175,9 @@ int main(int argc, char** argv)
 	}
 	
 	
-	if(diferencaAngulos>-10 && diferencaAngulos<10) {
-		v2=0;	
+	if(diferencaAngulos>-15 && diferencaAngulos<15) {
+		v2=0;
+		v1=4.0;	
 	}
 	
 	
